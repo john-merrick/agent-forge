@@ -1,0 +1,15 @@
+services:
+  agent-forge:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist agents and database across restarts
+      - ./data:/app/data
+      - ./agents:/app/agents
+    environment:
+      - AGENT_FORGE_OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - AGENT_FORGE_OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
