@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     agents_dir: str = "agents"
     ollama_base_url: str = "http://localhost:11434"
     openrouter_api_key: str = ""
+    litellm_base_url: str = "http://localhost:4000/v1"
+    litellm_api_key: str = ""
     host: str = "0.0.0.0"
     port: int = 8000
 
