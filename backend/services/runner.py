@@ -63,6 +63,11 @@ async def run_agent(agent_id: str, input_data: dict | None = None) -> dict:
 
     env["OLLAMA_BASE_URL"] = settings.ollama_base_url
 
+    # Pass LiteLLM proxy credentials to agent subprocesses
+    if settings.litellm_api_key:
+        env["LITELLM_API_KEY"] = settings.litellm_api_key
+        env["LITELLM_BASE_URL"] = settings.litellm_base_url
+
     if input_data:
         env["AGENT_INPUT"] = json.dumps(input_data)
 

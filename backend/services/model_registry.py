@@ -57,7 +57,38 @@ async def list_openrouter_models() -> list[dict]:
         return []
 
 
+async def list_litellm_models() -> list[dict]:
+    """List models available through the LiteLLM proxy."""
+    if not settings.litellm_api_key:
+        return []
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            r = await client.get(
+                f"{settings.litellm_base_url}/models",
+                headers={"Authorization": f"Bearer {settings.litellm_api_key}"},
+            )
+            r.raise_for_status()
+            data = r.json()
+            return [
+                {
+                    "id": m["id"],
+                    "name": m["id"],
+                    "provider": "litellm",
+                    "context_length": None,
+                    "pricing": {},
+                }
+                for m in data.get("data", [])
+            ]
+    except Exception:
+        return []
+
+
 async def list_all_models() -> list[dict]:
+    litellm = await list_litellm_models()
+    # If LiteLLM is configured, it already proxies both cloud + Ollama models
+    if litellm:
+        return litellm
+    # Fallback: list directly from providers
     ollama = await list_ollama_models()
     openrouter = await list_openrouter_models()
     return ollama + openrouter
